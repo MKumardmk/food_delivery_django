@@ -9,21 +9,26 @@ from .utils import Util
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
   # We are writing this becoz we need confirm password field in our Registratin Request
-  password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
+  password = serializers.CharField(
+        max_length=65, min_length=8, write_only=True)
+  email = serializers.EmailField(max_length=255, min_length=4),
+  first_name = serializers.CharField(max_length=255, min_length=2)
+  last_name = serializers.CharField(max_length=255, min_length=2)
   class Meta:
     model = User
-    fields=['email', 'name', 'password', 'password2', 'tc']
+    fields=['email', 'last_name','password', 'first_name', 'device_type', 'device_token','phone_number']
     extra_kwargs={
       'password':{'write_only':True}
     }
 
   # Validating Password and Confirm Password while Registration
   def validate(self, attrs):
-    password = attrs.get('password')
-    password2 = attrs.get('password2')
-    if password != password2:
-      raise serializers.ValidationError("Password and Confirm Password doesn't match")
-    return attrs
+    email= attrs.get('email',"")
+    if User.objects.filter(email=email).exists():
+       raise serializers.ValidationError(
+                {'email': ('Email is already registered')})
+    return super().validate(attrs)
+
 
   def create(self, validate_data):
     return User.objects.create_user(**validate_data)

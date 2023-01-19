@@ -4,7 +4,7 @@ from django.db import models
 
 #  Custom User Manager
 class UserManager(BaseUserManager):
-  def create_user(self, email, name, tc, password=None, password2=None):
+  def create_user(self, email, first_name,last_name,phone_number,device_type,device_token, password=None, ):
       """
       Creates and saves a User with the given email, name, tc and password.
       """
@@ -13,8 +13,11 @@ class UserManager(BaseUserManager):
 
       user = self.model(
           email=self.normalize_email(email),
-          name=name,
-          tc=tc,
+          first_name=first_name,
+          last_name=last_name,
+          phone_number=phone_number,
+          device_type=device_type,
+          device_token=device_token
       )
 
       user.set_password(password)
@@ -42,8 +45,11 @@ class User(AbstractBaseUser):
       max_length=255,
       unique=True,
   )
-  name = models.CharField(max_length=200)
-  tc = models.BooleanField()
+  first_name = models.CharField(max_length=200)
+  last_name = models.CharField(max_length=200,null=True,blank=True)
+  phone_number= models.CharField(max_length=20,null=True,blank=True)
+  device_type = models.CharField(max_length=255,null=True,blank=True)
+  device_token=models.CharField(default="eQJM6WkmQZ6wTKJGLU74hw:APA91bHkQp4-dw3zSqf9Pn53u4ed7o_XWH0eFou7-ZITVAYaZU2K97kPmt9KUlRtsnDYjqImBaMGVBq67J91jMCpy1jpDKVZYIJc1rVN6jODqNYPwZ0bc-J8DdXjp3LckGsi_BXMHXya",max_length=255)
   is_active = models.BooleanField(default=True)
   is_admin = models.BooleanField(default=False)
   created_at = models.DateTimeField(auto_now_add=True)
@@ -52,7 +58,7 @@ class User(AbstractBaseUser):
   objects = UserManager()
 
   USERNAME_FIELD = 'email'
-  REQUIRED_FIELDS = ['name', 'tc']
+  REQUIRED_FIELDS = ['first_name', 'phone_number','device_type','device_token']
 
   def __str__(self):
       return self.email
