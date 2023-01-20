@@ -1,7 +1,14 @@
+import datetime
+import os
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
 
+def getFileName(requset,filename):
+  now_time=datetime.datetime.now().strftime("%Y%m%d%H:%M:%S")
+  new_filename="%s%s"%(now_time,filename)
+  return os.path.join('uploads/',new_filename)
 #  Custom User Manager
 class UserManager(BaseUserManager):
   def create_user(self, email, first_name,last_name,phone_number,device_type,device_token, password=None, ):
@@ -48,6 +55,7 @@ class User(AbstractBaseUser):
   first_name = models.CharField(max_length=200)
   last_name = models.CharField(max_length=200,null=True,blank=True)
   phone_number= models.CharField(max_length=20,null=True,blank=True)
+  profile_image= models.ImageField(upload_to=getFileName,null=True,blank=True)
   device_type = models.CharField(max_length=255,null=True,blank=True)
   device_token=models.CharField(default="eQJM6WkmQZ6wTKJGLU74hw:APA91bHkQp4-dw3zSqf9Pn53u4ed7o_XWH0eFou7-ZITVAYaZU2K97kPmt9KUlRtsnDYjqImBaMGVBq67J91jMCpy1jpDKVZYIJc1rVN6jODqNYPwZ0bc-J8DdXjp3LckGsi_BXMHXya",max_length=255)
   is_active = models.BooleanField(default=True)
